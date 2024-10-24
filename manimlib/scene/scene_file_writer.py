@@ -49,7 +49,7 @@ class SceneFileWriter(object):
         quiet: bool = False,
         total_frames: int = 0,
         progress_description_len: int = 40,
-        video_codec: str = "libx264",
+        video_codec: str = "h264",
         pixel_format: str = "yuv420p",
         saturation: float = 1.0,
         gamma: float = 1.0,
@@ -267,6 +267,7 @@ class SceneFileWriter(object):
         vf_arg = 'vflip'
         # if self.pixel_format.startswith("yuv"):
         vf_arg += f',eq=saturation={self.saturation}:gamma={self.gamma}'
+        print(f"Filter arguments: {vf_arg}")
 
         command = [
             FFMPEG_BIN,
@@ -276,7 +277,7 @@ class SceneFileWriter(object):
             '-pix_fmt', 'rgba',
             '-r', str(fps),  # frames per second
             '-i', '-',  # The input comes from a pipe
-            '-vf', vf_arg,
+            # '-vf', vf_arg,
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
         ]

@@ -4,7 +4,7 @@ directories:
   # sourcecode generating that video
   mirror_module_path: False
   # Where should manim output video and image files?
-  output: ""
+  output: "/Users/xuborong/Downloads"
   # If you want to use images, manim will look to these folders to find them
   raster_images: ""
   vector_images: ""
@@ -36,7 +36,7 @@ file_writer_config:
   # easier when working with the broken up scene, which
   # effectively has cuts at all the places you might want.
   break_into_partial_movies: False
-  video_codec: "libx264"
+  video_codec: "h264"
   pixel_format: "yuv420p"
   saturation: 1.0
   gamma: 1.0
