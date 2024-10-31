@@ -1,47 +1,26 @@
-from manimlib import *
+from manim import *
 
-def Gaussian(x, miu, sigma):
-    return 1 / (math.sqrt(2 * math.pi) * sigma) * math.exp(-1/2 * ((x - miu) / sigma) ** 2)
-
-class N(Scene):
+class FollowingGraphCamera(MovingCameraScene):
     def construct(self):
-        axes = Axes((-5, 5), (-0.5, 1))
-        axes.add_coordinate_labels()
+        self.camera.frame.save_state()
 
-        self.play(Write(axes, lag_ratio=0.01, run_time=1))
+        # create the axes and the curve
+        ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
+        graph = ax.plot(lambda x: np.sin(x), color=BLUE, x_range=[0, 3 * PI])
 
-        miu = 2
-        sigma = 0.5
-        # Axes.get_graph will return the graph of a function
-        Gaussian1 = axes.get_graph(
-            lambda x: Gaussian(x, miu, sigma),
-            color=BLUE,
-        )
-        
-        # sin_label = axes.get_graph_label(sin_graph, Text("X~N(2, 0.5)"))
-        
-        miu = 0
-        sigma = 0.75
-        # Axes.get_graph will return the graph of a function
-        Gaussian2 = axes.get_graph(
-            lambda x: Gaussian(x, miu, sigma),
-            color=BLUE,
-        )
-        
-        # sin_label = axes.get_graph_label(sin_graph, Text("X~N(2, 0.5)"))
+        # create dots based on the graph
+        moving_dot = Dot(ax.i2gp(graph.t_min, graph), color=ORANGE)
+        dot_1 = Dot(ax.i2gp(graph.t_min, graph))
+        dot_2 = Dot(ax.i2gp(graph.t_max, graph))
 
-        self.play(
-            ShowCreation(Gaussian1),
-            # FadeIn(sin_label, RIGHT),
-        )
-        
-        self.wait(2)
-        
-        self.play(
-            ReplacementTransform(Gaussian1, Gaussian2),
-            # FadeTransform(sin_label, relu_label),
-        )
-        
-        self.wait(2)
+        self.add(ax, graph, dot_1, dot_2, moving_dot)
+        self.play(self.camera.frame.animate.scale(0.5).move_to(moving_dot))
 
-        self.wait()
+        def update_curve(mob):
+            mob.move_to(moving_dot.get_center())
+
+        self.camera.frame.add_updater(update_curve)
+        self.play(MoveAlongPath(moving_dot, graph, rate_func=linear))
+        self.camera.frame.remove_updater(update_curve)
+
+        self.play(Restore(self.camera.frame))
