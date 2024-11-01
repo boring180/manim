@@ -1,26 +1,44 @@
 from manim import *
 
-class FollowingGraphCamera(MovingCameraScene):
+def gaussian(x, mu, sigma):
+    return 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
+
+def uniform(x, a, b):
+    return 1 / (b - a) if a <= x <= b else 0 
+
+class EKF(MovingCameraScene):
     def construct(self):
-        self.camera.frame.save_state()
-
-        # create the axes and the curve
-        ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
-        graph = ax.plot(lambda x: np.sin(x), color=BLUE, x_range=[0, 3 * PI])
-
-        # create dots based on the graph
-        moving_dot = Dot(ax.i2gp(graph.t_min, graph), color=ORANGE)
-        dot_1 = Dot(ax.i2gp(graph.t_min, graph))
-        dot_2 = Dot(ax.i2gp(graph.t_max, graph))
-
-        self.add(ax, graph, dot_1, dot_2, moving_dot)
-        self.play(self.camera.frame.animate.scale(0.5).move_to(moving_dot))
-
-        def update_curve(mob):
-            mob.move_to(moving_dot.get_center())
-
-        self.camera.frame.add_updater(update_curve)
-        self.play(MoveAlongPath(moving_dot, graph, rate_func=linear))
-        self.camera.frame.remove_updater(update_curve)
-
-        self.play(Restore(self.camera.frame))
+        
+        # Number line and axis
+        ax = Axes(x_range=[0, 12], y_range=[0, 1], 
+        y_axis_config={"include_numbers": False, "tip_width": 0.1, "tip_height": 0.1}, 
+        x_axis_config=({"length": 10, "tip_width": 0.1, "tip_height": 0.1})
+        )
+        l = NumberLine(x_range=[0, 12], include_numbers=False, include_tip=False, length=10)
+        
+        # uniform distribution
+        a = 0
+        b = 10
+        uniformDistribution = ax.plot(lambda x: uniform(x, a, b), color=BLUE, x_range=[0, 10])
+        
+        # Gaussian distribution
+        mu = 5
+        sigma = 1
+        gaussianDistributionTag1 = ax.plot(lambda x: gaussian(x, mu, sigma), color=RED, x_range=[0, 10])
+        
+        # Robot image
+        robot= ImageMobject("robot.png")
+        robot.height = 2
+        robot.width = 2
+        
+        
+        # We imagine the world coordinate as a 1D number line, we are placing our robot on the line
+        self.play(Create(l), runtime = 2)
+        self.wait()
+        
+        # With no prior informtion, we have no idea about the robot's pose
+        # self.add(robot)
+        # In probability theory, this is called a uniform distribution
+        self.play(Transform(l, ax), runtime = 2)
+        self.play(Create(uniformDistribution), runtime = 2)
+        self.wait(1)
