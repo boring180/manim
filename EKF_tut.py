@@ -50,7 +50,7 @@ class EKF(Scene):
         bel0 = belAxis.plot(lambda x: uniform(x, a, b), color=BLUE, x_range=[0, 10])
         
         # The first measurement
-        measurement = VGroup(measureAxis, measureAxisLabel)
+        meaAxis = VGroup(measureAxis, measureAxisLabel)
         mu = 1
         sigma = 1
         gaussianDistributionTag1 = measureAxis.plot(lambda x: gaussian(x, mu, sigma), color=RED, x_range=[0, 10])
@@ -87,16 +87,16 @@ class EKF(Scene):
         self.play(AnimationGroup(belAxisGroup.animate.shift(DOWN * 1.5), 
                                 bel0.animate.shift(DOWN * 1.5)), 
                                 runtime = 2)
-        measurement.shift(UP * 1.5)
+        meaAxis.shift(UP * 1.5)
         gaussianDistributionTag1.shift(UP * 1.5)
-        self.play(Create(measurement), runtime = 2)
+        self.play(Create(meaAxis), runtime = 2)
         self.play(Create(gaussianDistributionTag1), runtime = 2)
         self.wait(2)
         
         # With the proir data, we can calculate the posterior distribution
         self.play(AnimationGroup(FadeTransform(bel0, bel1, stretch=False),
                                 belAxisGroup.animate.shift(UP * 1.5),
-                                FadeTransform(measurement, bel1, stretch=True),
+                                FadeTransform(meaAxis, bel1, stretch=False),
                                 FadeTransform(gaussianDistributionTag1, bel1, stretch=True),
                                 ),runtime = 2)
         self.wait(2)
