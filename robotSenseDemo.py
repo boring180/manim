@@ -9,5 +9,4 @@ class robotDemo(Scene):
         robot.move_to(LEFT * 3)
         self.play(FadeIn(robot))
         self.wait(1)
-        self.play(robot.animate.move_to(LEFT * 2))
         self.wait(1)

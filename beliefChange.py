@@ -16,7 +16,7 @@ class beliefChange(Scene):
         belAxis = Axes(x_range=[0, 12], 
         y_range=[0, 1], 
         y_axis_config={"tip_width": 0.1, "tip_height": 0.1}, 
-        y_length=2,
+        y_length=1.5,
         x_axis_config={"tip_width": 0.1, "tip_height": 0.1},
         x_length=10
         )
